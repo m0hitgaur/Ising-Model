@@ -17,7 +17,7 @@ private:
     double J;                       // Coupling ant (>0 for ferromagnetic)
     double T;                       // Temperature
     double beta;                    // 1/kT (k_B = 1)
-    mt19937 gen;               // Random number generator
+    mt19937 gen;               // Random number generato
     uniform_real_distribution<> uniform_dist;
     uniform_int_distribution<> site_dist;
     
