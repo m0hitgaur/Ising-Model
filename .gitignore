@@ -1,0 +1,18 @@
+# Compiled/Binary Files
+*.o
+*.exe
+a.out
+1D/data/
+2D/data/
+# IDE or OS temporary files
+.vscode/
+.idea/
+.DS_Store
+
+# Temporary folders for build outputs
+build/
+bin/
+
+# Private or sensitive data
+secrets/
+config.yaml
