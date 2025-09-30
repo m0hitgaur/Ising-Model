@@ -8,7 +8,7 @@
 #include <numeric> // Required for accumulate
 namespace fs = std::filesystem;
 using namespace std;
-
+string folder_path = fs::current_path().string();
 
 class IsingModel1D {
 private:
@@ -29,6 +29,7 @@ public:
         spins.resize(N);
         // Initialize with random spins
         for (int i = 0; i < N; i++) spins[i] = (uniform_dist(gen) < 0.5) ? -1 : 1;
+
     }
     
     // Initialize all spins up
@@ -107,9 +108,9 @@ public:
         double sum_M = 0.0, sum_M2 = 0.0;
         vector <double> mag_vs_time;
         vector <int> time_mag;
-        int sweep_flag=0;
+        int sweep_flag;
         for (int sweep = 0; sweep < totalsweeps; sweep++) {
-            ofstream file("/data/run_"+to_string(run)+"/lattice_"+to_string(sweep)+".dat");
+            ofstream file(folder_path+"/data/run_"+to_string(run)+"/lattice_"+to_string(sweep)+".dat");
             monteCarloSweep();
             double E = calculateEnergy();
             double M = calculateMagnetization() * N; 
@@ -124,10 +125,11 @@ public:
             else if(sweep>1000)sweep_flag=500;
             
             if(sweep%sweep_flag==0){
+                //cout<<"/data/run_"+to_string(run)+"/lattice_"+to_string(sweep)+".dat"<<"\n";
                 mag_vs_time.push_back(M);
                 time_mag.push_back(sweep);
                 vector<int> lattice=getSpins();
-                for(auto a:lattice)file<<a<<" ";
+                for(auto a:lattice)file<<a<<"\n";
             }
             file.close();
         }
@@ -225,7 +227,11 @@ int main() {
      double J = 1.0;             // Coupling const
      int numberofsweeps = 5000;   // total sweeps 
      int num_runs = 10;          // Number of independent runs to average over
-
+     ofstream file("details.txt");
+     file<<N<<"\n";
+     file<<J<<"\n";
+     file<<numberofsweeps<<"\n";
+     file<<num_runs<<"\n";
      make_dir(num_runs);
     // Use a random device to seed the random number generator for each run
     random_device rd;

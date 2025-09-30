@@ -4,6 +4,7 @@
 a.out
 1D/data/
 2D/data/
+*.txt
 # IDE or OS temporary files
 .vscode/
 .idea/
