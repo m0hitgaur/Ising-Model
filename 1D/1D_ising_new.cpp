@@ -182,12 +182,14 @@ double calculate_std_dev( vector<double>& v) {
 }
 
 
-void make_dir(int& num_runs){
+void make_dir(int& num_runs,vector<double>temperatures){
     fs::path folder_path = fs::current_path();
     cout<<"CREATING OUTPUT DIRECTORIES";
-    vector<string>directories;
-    directories.push_back(folder_path.string()+"/data");
-    for(int run=0;run<num_runs;run++)directories.push_back(folder_path.string()+"/data/run_"+to_string(run));
+    vector<string>directories;    
+    for(auto Temp:temperatures){
+        stringstream ss;
+        ss<<fixed << setprecision(2)<<Temp;
+        for(int run=0;run<num_runs;run++)directories.push_back(folder_path.string()+"/data/Temp_"+ss.str()+"/run_"+to_string(run));}
 
     for(auto dir_path:directories){
         cout<<dir_path<<"\n";
@@ -202,17 +204,14 @@ void make_dir(int& num_runs){
         } else {
             // The directory does not exist, so we create it
             //std::cout << "Directory does not exist. Creating it..." << std::endl;
-            try {
-                // Attempt to create the directory
-                if (fs::create_directory(dir_path)) {
-                    //std::cout << "Directory successfully created!" << std::endl;
-                } else {
-                    cout << "Failed to create the directory." << std::endl;
-                }
-            } catch (const fs::filesystem_error& e) {
-                // Catch any errors during directory creation (e.g., permissions issues)
-                cerr << "Filesystem error: " << e.what() << std::endl;
+            // Attempt to create the directory
+            if (fs::create_directories(dir_path)) {
+                //std::cout << "Directory successfully created!" << std::endl;
+            } 
+            else {
+                cout << "Failed to create the directory." << std::endl;
             }
+
         }
     }
     cout<<"OUTPUT DIRECTORIES CREATED SUCCESSFULLY \n";
@@ -226,7 +225,7 @@ int main() {
      int numberofsweeps = 5000;   // total sweeps 
      int num_runs = 10;          // Number of independent runs to average over
 
-     make_dir(num_runs);
+     
     // Use a random device to seed the random number generator for each run
         random_device rd;
 
@@ -245,15 +244,15 @@ int main() {
     cout << string(64, '-') << endl;
     
     // Output file for plotting
-    ofstream outfile("ising_1d_averaged_results.txt");
-    outfile << "# T Energy E_err Mag_abs M_err HeatCap C_err Suscept Chi_err\n";
+    ofstream outfile("ising_1d_averaged_results.csv");
+    outfile << "T,Energy,E_err,Mag_abs,M_err,HeatCap,C_err,Suscept,Chi_err\n";
     
     // Temperature range
     vector<double> temperatures;
     for (double T = 0.1; T <= 1; T += 0.1) {
         temperatures.push_back(T);
     }
-    
+    make_dir(num_runs,temperatures);
     for (double T : temperatures) {
         // Store results from each run for the current temperature
         vector<double> run_energies;
@@ -289,16 +288,16 @@ int main() {
         double final_avg_suscept = calculate_mean(run_suscepts);
         double stderr_suscept = calculate_std_dev(run_suscepts) / sqrt(num_runs);
         
-        cout << setw(8 ) << T
+        cout << setw( 4) << T
              << setw(14) << final_avg_energy
              << setw(14) << final_avg_mag
              << setw(14) << final_avg_heat_cap
              << setw(14) << final_avg_suscept << endl;
         
-        outfile << T << " " << final_avg_energy << " " << stderr_energy
-                << " " << final_avg_mag << " " << stderr_mag
-                << " " << final_avg_heat_cap << " " << stderr_heat_cap
-                << " " << final_avg_suscept << " " << stderr_suscept << "\n";
+        outfile << T << "," << final_avg_energy << "," << stderr_energy
+                << "," << final_avg_mag << "," << stderr_mag
+                << "," << final_avg_heat_cap << "," << stderr_heat_cap
+                << "," << final_avg_suscept << "," << stderr_suscept << "\n";
     }
     
     outfile.close();
