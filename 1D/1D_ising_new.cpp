@@ -228,7 +228,7 @@ int main() {
 
      make_dir(num_runs);
     // Use a random device to seed the random number generator for each run
-    random_device rd;
+        random_device rd;
 
     // --- Main Simulation ---
     cout << "1D Ising Model Simulation\n";
@@ -288,11 +288,11 @@ int main() {
         double final_avg_suscept = calculate_mean(run_suscepts);
         double stderr_suscept = calculate_std_dev(run_suscepts) / sqrt(num_runs);
         
-        cout << setw(8) << T
-                  << setw(14) << final_avg_energy
-                  << setw(14) << final_avg_mag
-                  << setw(14) << final_avg_heat_cap
-                  << setw(14) << final_avg_suscept << endl;
+        cout << setw(8 ) << T
+             << setw(14) << final_avg_energy
+             << setw(14) << final_avg_mag
+             << setw(14) << final_avg_heat_cap
+             << setw(14) << final_avg_suscept << endl;
         
         outfile << T << " " << final_avg_energy << " " << stderr_energy
                 << " " << final_avg_mag << " " << stderr_mag
