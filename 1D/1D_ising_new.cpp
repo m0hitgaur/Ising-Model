@@ -263,8 +263,9 @@ int main() {
 
         // Perform multiple independent runs
         for (int run = 0; run < num_runs; run++) {
-            // Create a new model with a unique seed for each run
-            IsingModel1D model(N, J, T, rd());
+            // Create a new model with a replicable unique seeds for each run
+            unsigned random=3294502797+ (100*run);
+            IsingModel1D model(N, J, T,random);
             
             double avg_energy, avg_mag, avg_mag_abs, heat_cap, suscept;
             model.simulate(numberofsweeps ,avg_energy, avg_mag, avg_mag_abs, heat_cap, suscept,run);
