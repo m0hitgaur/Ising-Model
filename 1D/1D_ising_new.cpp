@@ -8,7 +8,7 @@
 #include <numeric> // Required for accumulate
 namespace fs = std::filesystem;
 using namespace std;
-
+fs::path folder_path = fs::current_path();
 
 class IsingModel1D {
 private:
@@ -109,7 +109,9 @@ public:
         vector <int> time_mag;
         int sweep_flag=0;
         for (int sweep = 0; sweep < totalsweeps; sweep++) {
-            ofstream file("/data/run_"+to_string(run)+"/lattice_"+to_string(sweep)+".dat");
+            stringstream ss;
+            ss<<fixed<<setprecision(2)<<T;
+            ofstream file(folder_path.string()+"/data/Temp_"+ss.str()+"/run_"+to_string(run)+"/lattice_"+to_string(sweep)+".dat");
             monteCarloSweep();
             double E = calculateEnergy();
             double M = calculateMagnetization() * N; 
@@ -124,10 +126,11 @@ public:
             else if(sweep>1000)sweep_flag=500;
             
             if(sweep%sweep_flag==0){
+                //cout<<"/data/run_"+to_string(run)+"/lattice_"+to_string(sweep)+".dat"<<"\n";
                 mag_vs_time.push_back(M);
                 time_mag.push_back(sweep);
                 vector<int> lattice=getSpins();
-                for(auto a:lattice)file<<a<<" ";
+                for(auto a:lattice)file<<a<<"\n";
             }
             file.close();
         }
@@ -183,7 +186,7 @@ double calculate_std_dev( vector<double>& v) {
 
 
 void make_dir(int& num_runs,vector<double>temperatures){
-    fs::path folder_path = fs::current_path();
+    
     cout<<"CREATING OUTPUT DIRECTORIES";
     vector<string>directories;    
     for(auto Temp:temperatures){
@@ -192,7 +195,7 @@ void make_dir(int& num_runs,vector<double>temperatures){
         for(int run=0;run<num_runs;run++)directories.push_back(folder_path.string()+"/data/Temp_"+ss.str()+"/run_"+to_string(run));}
 
     for(auto dir_path:directories){
-        cout<<dir_path<<"\n";
+        //cout<<dir_path<<"\n";
         if (fs::exists(dir_path)) {
             // The path exists, now check if it's a directory
             if (fs::is_directory(dir_path)) {
@@ -214,7 +217,7 @@ void make_dir(int& num_runs,vector<double>temperatures){
 
         }
     }
-    cout<<"OUTPUT DIRECTORIES CREATED SUCCESSFULLY \n";
+    //cout<<"OUTPUT DIRECTORIES CREATED SUCCESSFULLY \n";
 
 }
 
